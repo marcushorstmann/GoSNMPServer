@@ -41,6 +41,7 @@ func (t *SubAgent) SyncConfig() error {
 			return err
 		}
 	}
+	t.Logger.Infof("Total OIDs of %v: %v", t.CommunityIDs, len(t.OIDs))
 
 	if len(t.OIDs) < 2 {
 		//to small to link
@@ -49,7 +50,7 @@ func (t *SubAgent) SyncConfig() error {
 
 	sort.Sort(byOID(t.OIDs))
 	for id, each := range t.OIDs {
-		t.Logger.Infof("OIDs of %v: %v", t.CommunityIDs, each.OID)
+		t.Logger.Debugf("OIDs of %v: %v", t.CommunityIDs, each.OID)
 		if id != 0 && t.OIDs[id].OID == t.OIDs[id-1].OID {
 			return fmt.Errorf("community %v: meet duplicate oid %v", t.CommunityIDs, each.OID)
 		}
