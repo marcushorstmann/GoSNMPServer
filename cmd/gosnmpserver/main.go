@@ -1,13 +1,17 @@
 package main
 
 import (
+	"errors"
+	"net"
 	"os"
+	"reflect"
 	"strings"
+	"time"
 
 	"github.com/gosnmp/gosnmp"
+	"github.com/marcushorstmann/GoSNMPServer"
+	"github.com/marcushorstmann/GoSNMPServer/mibImps"
 	"github.com/sirupsen/logrus"
-	"github.com/slayercat/GoSNMPServer"
-	"github.com/slayercat/GoSNMPServer/mibImps"
 	"github.com/urfave/cli/v2"
 )
 
@@ -91,6 +95,18 @@ func runServer(c *cli.Context) error {
 	if err != nil {
 		logger.Errorf("Error in listen: %+v", err)
 	}
-	server.ServeForever()
+	for {
+		server.SetReadDeadline(time.Now().Add(time.Second))
+		err := server.ServeNextRequest()
+		if err != nil {
+			var opError *net.OpError
+			if errors.As(err, &opError) {
+				logger.Debugf("ServeForever: break because of serveNextRequest error %v", opError)
+			} else {
+				logger.Errorf("ServeForever: ServeNextRequest error %v [type %v]", err, reflect.TypeOf(err))
+			}
+		}
+		logger.Debugf("request processing timeout")
+	}
 	return nil
 }

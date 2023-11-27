@@ -3,6 +3,7 @@ package GoSNMPServer
 import "net"
 import "github.com/pkg/errors"
 import "reflect"
+import "time"
 
 type SNMPServer struct {
 	wconnStream ISnmpServerListener
@@ -18,6 +19,14 @@ func NewSNMPServer(master MasterAgent) *SNMPServer {
 	ret.master = master
 	ret.logger = master.Logger
 	return ret
+}
+
+func (server *SNMPServer) SetNewMaster(master MasterAgent) {
+	if err := master.ReadyForWork(); err != nil {
+		panic(err)
+	}
+	server.master = master
+	server.logger = master.Logger
 }
 
 func (server *SNMPServer) ListenUDP(l3proto, address string) error {
@@ -43,6 +52,10 @@ func (server *SNMPServer) Shutdown() {
 	if server.wconnStream != nil {
 		server.wconnStream.Shutdown()
 	}
+}
+
+func (server *SNMPServer) SetReadDeadline(t time.Time) error {
+	return server.wconnStream.SetReadDeadline(t)
 }
 
 func (server *SNMPServer) ServeForever() error {
