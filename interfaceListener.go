@@ -2,12 +2,14 @@ package GoSNMPServer
 
 import "net"
 import "github.com/pkg/errors"
+import "time"
 
 type ISnmpServerListener interface {
 	SetupLogger(ILogger)
 	Address() net.Addr
 	NextSnmp() (snmpbytes []byte, replyer IReplyer, err error)
 	Shutdown()
+	SetReadDeadline(t time.Time) error
 }
 
 type IReplyer interface {
@@ -60,6 +62,10 @@ func (udp *UDPListener) Shutdown() {
 		udp.conn.Close()
 		udp.conn = nil
 	}
+}
+
+func (udp *UDPListener) SetReadDeadline(t time.Time) error {
+	return udp.conn.SetReadDeadline(t)
 }
 
 type UDPReplyer struct {
