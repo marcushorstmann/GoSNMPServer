@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gosnmp/gosnmp"
+	"github.com/marcushorstmann/GoSNMPServer"
 	"github.com/shirou/gopsutil/load"
-	"github.com/slayercat/GoSNMPServer"
 )
 
 // SystemLoadOIDs Returns a list of system Load.

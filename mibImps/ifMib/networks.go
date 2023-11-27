@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/gosnmp/gosnmp"
+	"github.com/marcushorstmann/GoSNMPServer"
 	"github.com/pkg/errors"
 	"github.com/shirou/gopsutil/net"
-	"github.com/slayercat/GoSNMPServer"
 )
 
 // NetworkOIDs Returns a list of network data.
