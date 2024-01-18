@@ -5,7 +5,7 @@ import (
 
 	"github.com/gosnmp/gosnmp"
 	"github.com/marcushorstmann/GoSNMPServer"
-	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/v3/disk"
 )
 
 // NameOverride configs what path disk usage will returns.

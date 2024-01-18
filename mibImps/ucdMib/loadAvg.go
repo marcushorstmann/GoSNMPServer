@@ -5,7 +5,7 @@ import (
 
 	"github.com/gosnmp/gosnmp"
 	"github.com/marcushorstmann/GoSNMPServer"
-	"github.com/shirou/gopsutil/load"
+	"github.com/shirou/gopsutil/v3/load"
 )
 
 // SystemLoadOIDs Returns a list of system Load.

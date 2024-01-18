@@ -10,7 +10,7 @@ import (
 	"github.com/gosnmp/gosnmp"
 	"github.com/marcushorstmann/GoSNMPServer"
 	"github.com/pkg/errors"
-	"github.com/shirou/gopsutil/net"
+	"github.com/shirou/gopsutil/v3/net"
 )
 
 // NetworkOIDs Returns a list of network data.
