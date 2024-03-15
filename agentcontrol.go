@@ -168,7 +168,7 @@ func (t *MasterAgent) ResponseForBuffer(i []byte) ([]byte, error) {
 		}
 
 		if request.MsgFlags&gosnmp.AuthPriv /*3*/ != gosnmp.SnmpV3MsgFlags(mode) {
-			return nil, errors.WithMessagef(ErrUnsupportedPacketData, "GoSNMP Returns %v", err)
+			return nil, errors.WithMessagef(ErrUnsupportedPacketData, "no privacy protocols set but expected")
 		}
 
 		if decodeError != nil {

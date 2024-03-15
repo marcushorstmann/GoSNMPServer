@@ -76,7 +76,7 @@ func (suite *TrapTests) TestTraps() {
 		if err != nil {
 			suite.Logger.Errorf("error in ServeForever: %v", err)
 		} else {
-			suite.Logger.Info("ServeForever Stoped.")
+			suite.Logger.Info("ServeForever Stopped.")
 		}
 		stopWaitChain <- 1
 
@@ -184,6 +184,7 @@ func (suite *TrapTests) TestErrorTraps() {
 		Logger: suite.Logger,
 		SecurityConfig: SecurityConfig{
 			AuthoritativeEngineBoots: 1,
+			NoSecurity:               true,
 			Users:                    []gosnmp.UsmSecurityParameters{},
 		},
 		SubAgents: []*SubAgent{
@@ -234,7 +235,7 @@ func (suite *TrapTests) TestErrorTraps() {
 		if err != nil {
 			suite.Logger.Errorf("error in ServeForever: %v", err)
 		} else {
-			suite.Logger.Info("ServeForever Stoped.")
+			suite.Logger.Info("ServeForever Stopped.")
 		}
 		stopWaitChain <- 1
 

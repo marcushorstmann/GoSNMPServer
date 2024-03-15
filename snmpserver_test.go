@@ -56,6 +56,7 @@ func (suite *ServerTests) TestErrors() {
 		Logger: suite.Logger,
 		SecurityConfig: SecurityConfig{
 			AuthoritativeEngineBoots: 1,
+			NoSecurity:               true,
 			Users:                    []gosnmp.UsmSecurityParameters{},
 		},
 		SubAgents: []*SubAgent{
@@ -149,7 +150,7 @@ func (suite *ServerTests) TestErrors() {
 		if err != nil {
 			suite.Logger.Errorf("error in ServeForever: %v", err)
 		} else {
-			suite.Logger.Info("ServeForever Stoped.")
+			suite.Logger.Info("ServeForever Stopped.")
 		}
 		stopWaitChain <- 1
 
@@ -239,6 +240,7 @@ func (suite *ServerTests) TestGetSetOids() {
 		Logger: suite.Logger,
 		SecurityConfig: SecurityConfig{
 			AuthoritativeEngineBoots: 1,
+			NoSecurity:               true,
 			Users: []gosnmp.UsmSecurityParameters{
 				{
 					UserName:                 "testUser",
@@ -264,7 +266,7 @@ func (suite *ServerTests) TestGetSetOids() {
 		if err != nil {
 			suite.Logger.Errorf("error in ServeForever: %v", err)
 		} else {
-			suite.Logger.Info("ServeForever Stoped.")
+			suite.Logger.Info("ServeForever Stopped.")
 		}
 		stopWaitChain <- 1
 

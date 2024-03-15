@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gosnmp/gosnmp"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -22,6 +23,7 @@ func (suite *ResponseForBufferTestSuite) SetupTest() {
 		Logger: suite.Logger,
 		SecurityConfig: SecurityConfig{
 			AuthoritativeEngineBoots: 123,
+			NoSecurity:               true,
 			Users: []gosnmp.UsmSecurityParameters{
 				{
 					UserName:                 "pippo",
@@ -238,30 +240,9 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3GetNextRequestEndofMib() {
 
 func (suite *ResponseForBufferTestSuite) TestSnmpv3NotEncrypted() {
 	buf := suite.snmpv3NotEncrypted()
-	var err error
+	_, err := suite.handle.ResponseForBuffer(buf)
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
-
-	if err != nil {
-		suite.T().Errorf("meet error: %+v", err)
-	}
-	if responsebytes == nil {
-		suite.T().Errorf("response shell not be nil")
-	}
-	suite.handle.Logger.Infof("Response done. try decode")
-	var handle = gosnmp.GoSNMP{}
-	handle.Logger = gosnmp.NewLogger(&SnmpLoggerAdapter{suite.handle.Logger})
-	response, err := handle.SnmpDecodePacket(responsebytes)
-	if err != nil || response == nil {
-		suite.T().Errorf("meet error: %+v", err)
-	}
-	assert.Equal(suite.T(), "", response.Community)
-
-	assert.NotEqual(suite.T(), nil, response.SecurityParameters)
-	assert.NotEqual(suite.T(), "", response.SecurityParameters.(*gosnmp.UsmSecurityParameters).AuthoritativeEngineID)
-	assert.Equal(suite.T(), "testuser", response.SecurityParameters.(*gosnmp.UsmSecurityParameters).UserName)
-	assert.Equal(suite.T(), uint32(123), response.SecurityParameters.(*gosnmp.UsmSecurityParameters).AuthoritativeEngineBoots)
-	assert.NotEqual(suite.T(), 0, response.SecurityParameters.(*gosnmp.UsmSecurityParameters).AuthoritativeEngineTime)
+	assert.Equal(suite.T(), err, errors.WithMessagef(ErrUnsupportedPacketData, "no privacy protocols set but expected"))
 }
 
 // Simple Network Management Protocol
