@@ -6,9 +6,10 @@ import "reflect"
 import "time"
 
 type SNMPServer struct {
-	wconnStream ISnmpServerListener
-	master      MasterAgent
-	logger      ILogger
+	wconnStream    ISnmpServerListener
+	master         MasterAgent
+	logger         ILogger
+	maxRepetitions uint32
 }
 
 func NewSNMPServer(master MasterAgent) *SNMPServer {
@@ -27,6 +28,10 @@ func (server *SNMPServer) SetNewMaster(master MasterAgent) {
 	}
 	server.master = master
 	server.logger = master.Logger
+}
+
+func (server *SNMPServer) SetMaxRepetitions(maxRepetitions uint32) {
+	server.maxRepetitions = maxRepetitions
 }
 
 func (server *SNMPServer) ListenUDP(l3proto, address string) error {
@@ -95,7 +100,8 @@ func (server *SNMPServer) ServeNextRequest() (err error) {
 	if err != nil {
 		return err
 	}
-	result, err := server.master.ResponseForBuffer(bytePDU)
+
+	result, err := server.master.ResponseForBuffer(bytePDU, server.maxRepetitions)
 	if err != nil {
 		v := "with"
 		if len(result) == 0 {

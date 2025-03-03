@@ -120,7 +120,7 @@ func (t *MasterAgent) getUserNameFromRequest(request *gosnmp.SnmpPacket) string 
 	return username
 }
 
-func (t *MasterAgent) ResponseForBuffer(i []byte) ([]byte, error) {
+func (t *MasterAgent) ResponseForBuffer(i []byte, maxRepetitons uint32) ([]byte, error) {
 	// Decode
 	vhandle := gosnmp.GoSNMP{}
 	vhandle.Logger = gosnmp.NewLogger(&SnmpLoggerAdapter{t.Logger})
@@ -132,6 +132,11 @@ func (t *MasterAgent) ResponseForBuffer(i []byte) ([]byte, error) {
 	case gosnmp.Version1, gosnmp.Version2c:
 		if t.SecurityConfig.NoSecurity == false {
 			return nil, errors.WithStack(ErrNoPermission)
+		}
+		if (maxRepetitons > 0) && (request.MaxRepetitions > maxRepetitons) {
+			t.Logger.Debugf("ResponseForBuffer: reducing max repetitions from %d to %d",
+				request.MaxRepetitions, maxRepetitons)
+			request.MaxRepetitions = maxRepetitons
 		}
 
 		return t.marshalPkt(t.ResponseForPkt(request))
@@ -185,6 +190,12 @@ func (t *MasterAgent) ResponseForBuffer(i []byte) ([]byte, error) {
 			if err != nil {
 				return nil, errors.WithMessagef(ErrUnsupportedPacketData, "GoSNMP Returns %v", err)
 			}
+		}
+
+		if (maxRepetitons > 0) && (request.MaxRepetitions > maxRepetitons) {
+			t.Logger.Debugf("ResponseForBuffer: reducing max repetitions from %d to %d",
+				request.MaxRepetitions, maxRepetitons)
+			request.MaxRepetitions = maxRepetitons
 		}
 
 		val, err := t.ResponseForPkt(request)

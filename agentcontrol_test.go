@@ -65,7 +65,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv1GetRequest() {
 	buf := suite.reqeustV1GetRequest()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -92,7 +92,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3HelloRequest() {
 	buf := suite.snmpv3HelloRequest()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -120,7 +120,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3EncryptedRequest() {
 	buf := suite.snmpv3Encrypted()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -160,7 +160,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3GetNextRequestInitial() {
 	buf := suite.snmpv3GetNextRequestInitial()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -201,7 +201,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3GetNextRequestEndofMib() {
 	buf := suite.snmpv3GetNextRequestEndofMib()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -240,7 +240,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3GetNextRequestEndofMib() {
 
 func (suite *ResponseForBufferTestSuite) TestSnmpv3NotEncrypted() {
 	buf := suite.snmpv3NotEncrypted()
-	_, err := suite.handle.ResponseForBuffer(buf)
+	_, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	assert.Equal(suite.T(), err, errors.WithMessagef(ErrUnsupportedPacketData, "no privacy protocols set but expected"))
 }
