@@ -22,7 +22,7 @@ func (suite *ResponseForBufferTestSuite) SetupTest() {
 		Logger: suite.Logger,
 		SecurityConfig: SecurityConfig{
 			AuthoritativeEngineBoots: 123,
-			NoSecurity: true,
+			NoSecurity:               true,
 			Users: []gosnmp.UsmSecurityParameters{
 				{
 					UserName:                 "pippo",
@@ -64,7 +64,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv1GetRequest() {
 	buf := suite.reqeustV1GetRequest()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -91,7 +91,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3HelloRequest() {
 	buf := suite.snmpv3HelloRequest()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -119,7 +119,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3EncryptedRequest() {
 	buf := suite.snmpv3Encrypted()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -159,7 +159,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3GetNextRequestInitial() {
 	buf := suite.snmpv3GetNextRequestInitial()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -200,7 +200,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3GetNextRequestEndofMib() {
 	buf := suite.snmpv3GetNextRequestEndofMib()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)
@@ -241,7 +241,7 @@ func (suite *ResponseForBufferTestSuite) TestSnmpv3NotEncrypted() {
 	buf := suite.snmpv3NotEncrypted()
 	var err error
 
-	responsebytes, err := suite.handle.ResponseForBuffer(buf)
+	responsebytes, err := suite.handle.ResponseForBuffer(buf, 0)
 
 	if err != nil {
 		suite.T().Errorf("meet error: %+v", err)

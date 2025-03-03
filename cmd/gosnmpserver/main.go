@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/gosnmp/gosnmp"
-	"github.com/marcushorstmann/GoSNMPServer"
-	"github.com/marcushorstmann/GoSNMPServer/mibImps"
 	"github.com/sirupsen/logrus"
+	"github.com/slayercat/GoSNMPServer"
+	"github.com/slayercat/GoSNMPServer/mibImps"
 	"github.com/urfave/cli/v2"
 )
 
@@ -63,7 +63,7 @@ func runServer(c *cli.Context) error {
 		Logger: logger,
 		SecurityConfig: GoSNMPServer.SecurityConfig{
 			AuthoritativeEngineBoots: 1,
-			SnmpV3Only:                   c.Bool("v3Only"),
+			SnmpV3Only:               c.Bool("v3Only"),
 			Users: []gosnmp.UsmSecurityParameters{
 				{
 					UserName:                 c.String("v3Username"),
@@ -81,8 +81,6 @@ func runServer(c *cli.Context) error {
 			},
 		},
 	}
-
-
 
 	logger.Infof("V3 Users:")
 	for _, val := range master.SecurityConfig.Users {
