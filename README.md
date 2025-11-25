@@ -50,7 +50,7 @@ master := GoSNMPServer.MasterAgent{
     },
 }
 server := GoSNMPServer.NewSNMPServer(master)
-err := server.ListenUDP("udp", "127.0.0.1:1161")
+err := server.ListenUDP("127.0.0.1:1161", nil)
 if err != nil {
     logger.Errorf("Error in listen: %+v", err)
 }

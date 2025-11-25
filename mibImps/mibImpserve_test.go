@@ -50,7 +50,7 @@ func (suite *SnmpServerTestSuite) SetupTest() {
 	}
 	suite.master = &master
 	suite.shandle = GoSNMPServer.NewSNMPServer(master)
-	suite.shandle.ListenUDP("udp4", ":0")
+	suite.shandle.ListenUDP(":0", &GoSNMPServer.UDPOptions{L3Proto: "udp4"})
 	go func() {
 		err := suite.shandle.ServeForever()
 		if err != nil {
