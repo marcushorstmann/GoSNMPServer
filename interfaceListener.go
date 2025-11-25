@@ -46,20 +46,25 @@ func listenUDPInternal(ctx context.Context, address string, opts *UDPOptions) (*
 			ToS:     0,
 		}
 	}
-	listenConfig := net.ListenConfig{
-		Control: func(_, _ string, c syscall.RawConn) error {
-			var err error
-			controlErr := c.Control(func(fd uintptr) {
-				err = syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IP, syscall.IP_TOS, opts.ToS)
-			})
-			if err != nil {
-				return fmt.Errorf("error while setting sockopt for ToS: %w", err)
-			}
-			if controlErr != nil {
-				return fmt.Errorf("error while ctrl func for setting sockopt for ToS: %w", controlErr)
-			}
-			return nil
-		},
+	var listenConfig net.ListenConfig
+	if opts.ToS != 0 {
+		listenConfig = net.ListenConfig{
+			Control: func(_, _ string, c syscall.RawConn) error {
+				var err error
+				controlErr := c.Control(func(fd uintptr) {
+					err = syscall.SetsockoptInt(int(fd), syscall.IPPROTO_IP, syscall.IP_TOS, opts.ToS)
+				})
+				if err != nil {
+					return fmt.Errorf("error while setting sockopt for ToS: %w", err)
+				}
+				if controlErr != nil {
+					return fmt.Errorf("error while ctrl func for setting sockopt for ToS: %w", controlErr)
+				}
+				return nil
+			},
+		}
+	} else {
+		listenConfig = net.ListenConfig{}
 	}
 	conn, err := listenConfig.ListenPacket(ctx, opts.L3Proto, address)
 	if err != nil {
