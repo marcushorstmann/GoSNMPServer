@@ -1,15 +1,23 @@
 package GoSNMPServer
 
-import "net"
-import "github.com/pkg/errors"
-import "reflect"
-import "time"
+import (
+	"net"
+	"reflect"
+	"time"
+
+	"github.com/pkg/errors"
+)
 
 type SNMPServer struct {
 	wconnStream    ISnmpServerListener
 	master         MasterAgent
 	logger         ILogger
 	maxRepetitions uint32
+}
+
+type UDPOptions struct {
+	L3Proto string
+	ToS     int
 }
 
 func NewSNMPServer(master MasterAgent) *SNMPServer {
@@ -34,15 +42,15 @@ func (server *SNMPServer) SetMaxRepetitions(maxRepetitions uint32) {
 	server.maxRepetitions = maxRepetitions
 }
 
-func (server *SNMPServer) ListenUDP(l3proto, address string) error {
+func (server *SNMPServer) ListenUDP(address string, opts *UDPOptions) error {
 	if server.wconnStream != nil {
 		return errors.New("Listened")
 	}
-	i, err := NewUDPListener(l3proto, address)
+	i, err := NewUDPListener(address, opts)
 	if err != nil {
 		return err
 	}
-	server.logger.Infof("ListenUDP: l3proto=%s, address=%s", l3proto, address)
+	server.logger.Infof("ListenUDP: udp_opts=%v, address=%s", opts, address)
 	i.SetupLogger(server.logger)
 	server.wconnStream = i
 	return nil

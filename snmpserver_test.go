@@ -142,7 +142,7 @@ func (suite *ServerTests) TestErrors() {
 		},
 	}
 	shandle := NewSNMPServer(master)
-	shandle.ListenUDP("udp4", ":0")
+	shandle.ListenUDP(":0", &UDPOptions{L3Proto: "udp4"})
 	var stopWaitChain = make(chan int)
 	go func() {
 		err := shandle.ServeForever()
@@ -257,7 +257,7 @@ func (suite *ServerTests) TestGetSetOids() {
 		},
 	}
 	shandle := NewSNMPServer(master)
-	shandle.ListenUDP("udp4", ":0")
+	shandle.ListenUDP(":0", &UDPOptions{L3Proto: "udp4"})
 	var stopWaitChain = make(chan int)
 	go func() {
 		err := shandle.ServeForever()

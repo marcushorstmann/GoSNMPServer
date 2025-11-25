@@ -94,7 +94,7 @@ func runServer(c *cli.Context) error {
 		)
 	}
 	server := GoSNMPServer.NewSNMPServer(master)
-	err := server.ListenUDP("udp", c.String("bindTo"))
+	err := server.ListenUDP(c.String("bindTo"), nil)
 	if err != nil {
 		logger.Errorf("Error in listen: %+v", err)
 	}

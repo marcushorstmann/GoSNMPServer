@@ -69,7 +69,7 @@ func (suite *TrapTests) TestTraps() {
 		},
 	}
 	shandle := NewSNMPServer(master)
-	shandle.ListenUDP("udp4", ":0")
+	shandle.ListenUDP(":0", &UDPOptions{L3Proto: "udp4"})
 	var stopWaitChain = make(chan int)
 	go func() {
 		err := shandle.ServeForever()
@@ -227,7 +227,7 @@ func (suite *TrapTests) TestErrorTraps() {
 		},
 	}
 	shandle := NewSNMPServer(master)
-	shandle.ListenUDP("udp4", ":0")
+	shandle.ListenUDP(":0", &UDPOptions{L3Proto: "udp4"})
 	var stopWaitChain = make(chan int)
 	go func() {
 		err := shandle.ServeForever()
