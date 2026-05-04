@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/gosnmp/gosnmp"
+	"github.com/marcushorstmann/GoSNMPServer"
+	"github.com/marcushorstmann/GoSNMPServer/mibImps"
 	"github.com/sirupsen/logrus"
-	"github.com/slayercat/GoSNMPServer"
-	"github.com/slayercat/GoSNMPServer/mibImps"
 	"github.com/urfave/cli/v2"
 )
 
