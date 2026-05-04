@@ -314,17 +314,14 @@ func (t *SubAgent) serveGetBulkRequest(i *gosnmp.SnmpPacket) (*gosnmp.SnmpPacket
 
 	t.Logger.Debugf("handle remaining (%d, max-repetitions=%d)", vc-i.NonRepeaters, i.MaxRepetitions)
 	eomv := make(map[string]struct{})
+	lastItem := &PDUValueControlItem{OID: i.Variables[0].Name}
 	for j := uint32(0); j < i.MaxRepetitions; j++ { // loop through repetitions
 		for k := i.NonRepeaters; k < vc; k++ { // loop through "repeaters"
 			queryForOid := i.Variables[k].Name
 			queryForOidStriped := strings.TrimLeft(queryForOid, ".0")
 			item, before := t.getForPDUValueControl(queryForOidStriped)
-
 			if !before {
 				item = t.NextPDU(item, 0)
-				if item == nil {
-					break
-				}
 			} else {
 				before = false
 			}
@@ -335,17 +332,17 @@ func (t *SubAgent) serveGetBulkRequest(i *gosnmp.SnmpPacket) (*gosnmp.SnmpPacket
 
 			if item == nil {
 				if _, found := eomv[queryForOid]; !found {
-					ret.Variables = append(ret.Variables, t.getPDUEndOfMibView(queryForOid))
+					ret.Variables = append(ret.Variables, t.getPDUEndOfMibView(lastItem.OID))
 					eomv[queryForOid] = struct{}{}
 				}
-				continue
+				return &ret, nil
 			}
-			t.Logger.Debugf("t.getForPDUValueControl. query_for_oid=%v item=%v id=%v", queryForOid, item, item.id)
 			ctl, snmperr := t.getForPDUValueControlResult(item, i)
 			if snmperr != gosnmp.NoError && ret.Error == gosnmp.NoError {
 				ret.Error = snmperr
 				ret.ErrorIndex = k
 			}
+			lastItem = item
 			ret.Variables = append(ret.Variables, ctl)
 		}
 	}
@@ -487,8 +484,12 @@ func (t *SubAgent) getForPDUValueControl(oid string) (*PDUValueControlItem, bool
 
 	if i < len(t.OIDs) {
 		// t.OIDs[i].OID == toQuery
-		if compareByteString(oidToByteString(t.OIDs[i].OID), toQuery) == ByteStringCompareResultEqual {
+		compareResult := compareByteString(oidToByteString(t.OIDs[i].OID), toQuery)
+		switch compareResult {
+		case ByteStringCompareResultEqual:
 			return t.OIDs[i], false
+		case ByteStringCompareResultGreaterThen:
+			return t.OIDs[i], true
 		}
 	}
 
@@ -507,7 +508,6 @@ func (t *SubAgent) NextPDU(item *PDUValueControlItem, skip int) *PDUValueControl
 }
 
 func (t *SubAgent) nextPDU(item *PDUValueControlItem, skip int) *PDUValueControlItem {
-
 	if item == nil || item.nextPDU == nil {
 		return nil
 	}
