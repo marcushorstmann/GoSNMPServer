@@ -320,7 +320,7 @@ func (t *SubAgent) serveGetBulkRequest(i *gosnmp.SnmpPacket) (*gosnmp.SnmpPacket
 			queryForOid := i.Variables[k].Name
 			queryForOidStriped := strings.TrimLeft(queryForOid, ".0")
 			item, before := t.getForPDUValueControl(queryForOidStriped)
-
+			t.Logger.Debugf("add var: %s %v %v", queryForOid, item, before)
 			if !before {
 				item = t.NextPDU(item, 0)
 				if item == nil {
@@ -488,8 +488,12 @@ func (t *SubAgent) getForPDUValueControl(oid string) (*PDUValueControlItem, bool
 
 	if i < len(t.OIDs) {
 		// t.OIDs[i].OID == toQuery
-		if compareByteString(oidToByteString(t.OIDs[i].OID), toQuery) == ByteStringCompareResultEqual {
+		compareResult := compareByteString(oidToByteString(t.OIDs[i].OID), toQuery)
+		switch compareResult {
+		case ByteStringCompareResultEqual:
 			return t.OIDs[i], false
+		case ByteStringCompareResultGreaterThen:
+			return t.OIDs[i], true
 		}
 	}
 
