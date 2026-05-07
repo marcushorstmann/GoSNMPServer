@@ -410,14 +410,32 @@ func (suite *ServerTests) TestGetSetOids() {
 
 	})
 	suite.Run("SNMPBulkGet", func() {
-		result, err := getCmdOutput("snmpbulkwalk", "-v2c", "-c", "public", serverAddress.String(),
+		result, err := getCmdOutput("snmpbulkwalk", "-v2c", "-c", "public", "-On", serverAddress.String(),
 			"1")
 		if err != nil {
 			suite.T().Errorf("cmd meet error: %+v.\nresultErr=%v\n resultout=%v",
 				err, string(err.(*exec.ExitError).Stderr), string(result))
 		}
 		lines := bytes.Split(bytes.TrimSpace(result), []byte("\n"))
+		suite.T().Logf("result: %v", string(result))
 		assert.Equalf(suite.T(), len(master.SubAgents[0].OIDs)+1, len(lines), "data snmpwalk gets: \n%v", string(result))
+		assert.Equalf(suite.T(),
+			".1.2.4.2.0 = No more variables left in this MIB View (It is past the end of the MIB tree)",
+			string(lines[len(lines)-1]), "data snmpwalk gets: \n%v", string(lines[len(lines)-1]))
+	})
+	suite.Run("SNMPBulkGetLexicalNext", func() {
+		result, err := getCmdOutput("snmpbulkwalk", "-v2c", "-c", "public", "-On", serverAddress.String(),
+			"1.2.4.2")
+		if err != nil {
+			suite.T().Errorf("cmd meet error: %+v.\nresultErr=%v\n resultout=%v",
+				err, string(err.(*exec.ExitError).Stderr), string(result))
+		}
+		lines := bytes.Split(bytes.TrimSpace(result), []byte("\n"))
+		suite.T().Logf("result: %v", string(result))
+		assert.Equalf(suite.T(), 1+1, len(lines), "data snmpwalk gets: \n%v", string(result))
+		assert.Equalf(suite.T(),
+			".1.2.4.2.0 = No more variables left in this MIB View (It is past the end of the MIB tree)",
+			string(lines[1]), "data snmpwalk gets: \n%v", string(lines[1]))
 	})
 	suite.Run("SNMPWalk_UnknownUser", func() {
 		result, err := getCmdOutput("snmpwalk", "-v3", "-n", "public", "-u", "UnknownUser",
@@ -600,6 +618,19 @@ func (suite *ServerTests) getTestGetSetOIDS() []*PDUValueControlItem {
 				return nil
 			},
 			Document: "TestTypeIPAddress",
+		},
+		{
+			OID:  "1.2.4.2.0",
+			Type: gosnmp.Counter32,
+			OnGet: func() (value interface{}, err error) {
+				return Asn1Gauge32Wrap(baseTestSuite.privGetSetOIDS.val_Gauge32), nil
+			},
+			OnSet: func(value interface{}) (err error) {
+				val := Asn1Gauge32Unwrap(baseTestSuite.privGetSetOIDS.val_Gauge32)
+				baseTestSuite.privGetSetOIDS.val_Gauge32 = val
+				return nil
+			},
+			Document: "TestTypeScalarCounter32",
 		},
 	}
 }
